@@ -22,6 +22,6 @@ jobs:
     - name: SSH and Pull Code
       run: |
         ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
-          cd /var/www/html
+          cd /home/azureuser/flamesgame
           git pull origin main
         EOF
