@@ -23,5 +23,5 @@ jobs:
       run: |
         ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           cd /home/azureuser/flamesgame
-          git pull origin main
+          git pull origin main || git clone https://github.com/coder-Jeeva/flamesgame.git
         EOF
