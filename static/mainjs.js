@@ -1,5 +1,6 @@
-import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+ import confetti from 'https://cdn.skypack.dev/canvas-confetti';
 
+// Allow Enter key to jump between inputs
 document.addEventListener("DOMContentLoaded", function() {
     var inputs = document.querySelectorAll("input");
 
@@ -16,42 +17,48 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let result;
 const submit = document.getElementById("calculate-btn");
-submit.addEventListener("click", function calculate() {
-    let king_name = document.getElementById("king-name").value;
-    let queen_name = document.getElementById("queens-name").value;
-    let text_area = document.getElementById("text_area");
-    king_name = king_name.toLowerCase();
-    queen_name = queen_name.toLowerCase();
 
-    for (let char of king_name) {
-        if (queen_name.includes(char)) {
-            king_name = king_name.replace(char, '');
-            queen_name = queen_name.replace(char, '');
+// ✅ Corrected FLAMES logic
+submit.addEventListener("click", function calculate() {
+    let king_name = document.getElementById("king-name").value.toLowerCase().replace(/\s+/g, "");
+    let queen_name = document.getElementById("queens-name").value.toLowerCase().replace(/\s+/g, "");
+
+    // Turn names into arrays
+    let kingArr = king_name.split("");
+    let queenArr = queen_name.split("");
+
+    // Cancel out common characters properly
+    for (let i = 0; i < kingArr.length; i++) {
+        let index = queenArr.indexOf(kingArr[i]);
+        if (index !== -1) {
+            kingArr.splice(i, 1);
+            queenArr.splice(index, 1);
+            i--; // step back after splice
         }
     }
 
-    let count = king_name.length + queen_name.length;
+    let count = kingArr.length + queenArr.length;
 
-    let flames = ['Friends', 'in Love', 'in Affection', 'Married', 'Enemies', 'Cousins'];
+    let flames = ["Friends", "Love", "Affection", "Marriage", "Enemies", "Siblings"];
+    let index = 0;
 
+    // Rotate and remove until one left
     while (flames.length > 1) {
-        let index = (count % flames.length) - 1;
-        if (index === -1) {
-            index = flames.length - 1;
-        }
-        flames = flames.slice(index + 1).concat(flames.slice(0, index));
+        index = (index + count - 1) % flames.length;
+        flames.splice(index, 1);
     }
 
     result = flames[0];
 });
 
+// Render the result with animation
 submit.addEventListener("click", function render() {
     var king_name = document.getElementById("king-name").value;
     var queen_name = document.getElementById("queens-name").value;
     let text_area = document.getElementById("text_area");
 
     text_area.innerHTML = " ";
-    text_area.innerHTML = '<img data-src="/images/heart.png" id="heart" loading="lazy" />';
+    text_area.innerHTML = '<img data-src="/static/images/heart.png" id="heart" loading="lazy" />';
 
     let img = document.querySelector('img[data-src]');
 
@@ -68,11 +75,11 @@ submit.addEventListener("click", function render() {
 
         observer.observe(img);
     } else {
-        // Fallback for browsers that do not support IntersectionObserver
         img.src = img.dataset.src;
     }
 
-    setInterval(function () {
+    // Use setTimeout instead of setInterval (fires once after 3.5s)
+    setTimeout(function () {
         text_area.innerHTML = " ";
         text_area.innerHTML = `<p class="rendered_king_name">${king_name}</p>`;
         text_area.innerHTML += '<p class="rendered_para">and</p>';

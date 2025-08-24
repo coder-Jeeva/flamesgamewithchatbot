@@ -1,31 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="shortcut icon" href="images/flamesfavicon.png">
-    <title>Flames</title>
-  </head>
-  <body>
-    <main class="main">
-      <div class="login_menu">
-        <div id="text_area">
-          <h1 class="heading">Welcome</h1>
-          <h3 class="heading_2">Flames Calculator</h3>
-          <input type="text" id="king-name" placeholder="Enter King's Name" />
-          <input
-            type="text"
-            id="queens-name"
-            placeholder="Enter Queen's Name"
-          />
-          <button id="calculate-btn">Calculate Our Fate</button>
-          <h6>Praveen Sam Durai</h6>
-        </div>
-      </div>
-      <p class="copyright">COPYRIGHT &COPY;PGB PVT LTD</p>
-    </main>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="/static/styles.css" />
+<script src="/static/mainjs.js" type="module" defer></script>
+<title>Flames</title>
 
-    <script src="main.js" type="module" defer></script>
-  </body>
+<style>
+body { margin: 0; font-family: Arial, sans-serif; }
+#chat-button { position: fixed; bottom: 20px; right: 20px; background: #ff4081; color: white; border: none; border-radius: 50%; width: 65px; height: 65px; font-size: 28px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(255,64,129,0.8); animation: flame-glow 1.5s infinite alternate; }
+@keyframes flame-glow { 0% { box-shadow: 0 0 10px rgba(255,64,129,0.7),0 0 20px rgba(255,120,0,0.6),0 0 40px rgba(255,200,0,0.4);} 100% { box-shadow:0 0 20px rgba(255,64,129,1),0 0 40px rgba(255,120,0,0.9),0 0 60px rgba(255,200,0,0.6);} }
+#chat-container { position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; display: none; border-radius: 12px; overflow-y: auto; box-shadow: 0px 4px 12px rgba(0,0,0,0.4); background: white; padding: 10px; display: flex; flex-direction: column; }
+.message { padding: 8px; border-radius: 10px; margin: 5px; max-width: 80%; }
+.user { background: #ff4081; color: white; align-self: flex-end; }
+.ai { background: #eee; color: black; align-self: flex-start; }
+#chat-input-container { display: flex; margin-top: auto; }
+#chat-input { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
+#send-btn { padding: 8px 12px; margin-left: 5px; border: none; background: #ff4081; color: white; border-radius: 6px; cursor: pointer; }
+</style>
+</head>
+<body>
+<main class="main">
+  <div class="login_menu">
+    <div id="text_area">
+      <h1 class="heading">Welcome</h1>
+      <h3 class="heading_2">Flames Calculator</h3>
+      <input type="text" id="king-name" placeholder="Enter King's Name" />
+      <input type="text" id="queens-name" placeholder="Enter Queen's Name" />
+      <button id="calculate-btn">Calculate Our Fate</button>
+       
+      <div id="heart-result"></div>
+    </div>
+  </div>
+  <p class="copyright">COPYRIGHT &COPY; PGB PVT LTD</p>
+</main>
+
+<button id="chat-button">💬</button>
+
+<div id="chat-container">
+  <div id="chat-window" style="flex:1; overflow-y:auto;"></div>
+  <div id="chat-input-container">
+    <input type="text" id="chat-input" placeholder="Type a message..." />
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+
+<script type="module">
+import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+
+const chatButton = document.getElementById("chat-button");
+const chatContainer = document.getElementById("chat-container");
+const chatWindow = document.getElementById("chat-window");
+const chatInput = document.getElementById("chat-input");
+const sendBtn = document.getElementById("send-btn");
+
+function addMessage(msg, sender) {
+  const msgDiv = document.createElement("div");
+  msgDiv.className = `message ${sender}`;
+  msgDiv.textContent = msg;
+  chatWindow.appendChild(msgDiv);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+async function sendMessage() {
+  const message = chatInput.value;
+  if (!message) return;
+  addMessage(message, "user");
+  chatInput.value = "";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+    addMessage(data.reply, "ai");
+  } catch (err) {
+    addMessage("Error contacting AI.", "ai");
+  }
+}
+
+sendBtn.addEventListener("click", sendMessage);
+chatInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+
+chatButton.addEventListener("click", () => {
+  chatContainer.style.display = chatContainer.style.display === "none" ? "flex" : "none";
+});
+</script>
+
+<script src="/static/mainjs.js" type="module"></script>
+</body>
 </html>
