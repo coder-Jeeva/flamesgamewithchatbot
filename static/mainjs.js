@@ -51,7 +51,7 @@ submit.addEventListener("click", function render() {
     let text_area = document.getElementById("text_area");
 
     text_area.innerHTML = " ";
-    text_area.innerHTML = '<img data-src="/images/heart.png" id="heart" loading="lazy" />';
+    text_area.innerHTML = '<img data-src="/static/images/heart.png" id="heart" loading="lazy" />';
 
     let img = document.querySelector('img[data-src]');
 

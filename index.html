@@ -3,9 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="shortcut icon" href="images/flamesfavicon.png">
+    <link rel="stylesheet" href="/static/styles.css" />
+    <!-- <link rel="shortcut icon" href="/static/images/flamesfavicon.png"> -->
+    <script src="/static/mainjs.js" type="module" defer></script>
+
     <title>Flames</title>
+
+    <!-- Bot Framework Web Chat -->
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      #webchat {
+        height: 100%;
+        width: 100%;
+      }
+
+      /* Floating chat button */
+      #chat-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #ff4081;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 65px;
+        height: 65px;
+        font-size: 28px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 20px rgba(255, 64, 129, 0.8);
+        animation: flame-glow 1.5s infinite alternate;
+      }
+
+      /* Flame glow effect */
+      @keyframes flame-glow {
+        0% {
+          box-shadow: 0 0 10px rgba(255, 64, 129, 0.7),
+                      0 0 20px rgba(255, 120, 0, 0.6),
+                      0 0 40px rgba(255, 200, 0, 0.4);
+        }
+        100% {
+          box-shadow: 0 0 20px rgba(255, 64, 129, 1),
+                      0 0 40px rgba(255, 120, 0, 0.9),
+                      0 0 60px rgba(255, 200, 0, 0.6);
+        }
+      }
+
+      /* Chat container hidden initially */
+      #chat-container {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 350px;
+        height: 500px;
+        display: none; /* hidden by default */
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+        background: white;
+      }
+
+      /* Heart image style */
+      #heart-result {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      #heart-result img {
+        width: 120px;
+        animation: heartbeat 1.2s infinite;
+      }
+
+      @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+      }
+    </style>
   </head>
   <body>
     <main class="main">
@@ -14,18 +95,73 @@
           <h1 class="heading">Welcome</h1>
           <h3 class="heading_2">Flames Calculator</h3>
           <input type="text" id="king-name" placeholder="Enter King's Name" />
-          <input
-            type="text"
-            id="queens-name"
-            placeholder="Enter Queen's Name"
-          />
+          <input type="text" id="queens-name" placeholder="Enter Queen's Name" />
           <button id="calculate-btn">Calculate Our Fate</button>
           <h6>Praveen Sam Durai</h6>
+
+          <!-- 🔹 Heart result -->
+          <div id="heart-result"></div>
         </div>
       </div>
-      <p class="copyright">COPYRIGHT &COPY;PGB PVT LTD</p>
+      <p class="copyright">COPYRIGHT &COPY; PGB PVT LTD</p>
     </main>
 
-    <script src="main.js" type="module" defer></script>
+    <!-- Floating Chat Button -->
+    <button id="chat-button">💬</button>
+
+    <!-- Chat Window (hidden initially) -->
+    <div id="chat-container">
+      <div id="webchat"></div>
+    </div>
+
+    <script>
+      async function initBot() {
+        try {
+          const res = await fetch("/api/token");
+          const { token } = await res.json();
+
+          window.WebChat.renderWebChat(
+            {
+              directLine: window.WebChat.createDirectLine({ token }),
+              styleOptions: {
+                botAvatarInitials: "AI",
+                userAvatarInitials: "You"
+              }
+            },
+            document.getElementById("webchat")
+          );
+        } catch (err) {
+          console.error("Bot initialization failed:", err);
+        }
+      }
+
+      const chatButton = document.getElementById("chat-button");
+      const chatContainer = document.getElementById("chat-container");
+
+      let botLoaded = false;
+
+      chatButton.addEventListener("click", () => {
+        if (chatContainer.style.display === "none") {
+          chatContainer.style.display = "block";
+          if (!botLoaded) {
+            initBot();
+            botLoaded = true;
+          }
+        } else {
+          chatContainer.style.display = "none";
+        }
+      });
+
+      // 🔹 Show heart on calculation
+      const calculateBtn = document.getElementById("calculate-btn");
+      const heartResult = document.getElementById("heart-result");
+
+      calculateBtn.addEventListener("click", () => {
+        heartResult.innerHTML = `
+          <img src="/static/images/heart.png" alt="Heart Love" />
+          <p>Your love fate is sealed ❤️🔥</p>
+        `;
+      });
+    </script>
   </body>
 </html>
