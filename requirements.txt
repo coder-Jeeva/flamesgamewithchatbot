@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+langchain
+openai
+aiohttp
+langchain_community
+azure-identity
+azure-keyvault-secrets

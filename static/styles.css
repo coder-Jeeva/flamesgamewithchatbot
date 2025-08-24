@@ -18,7 +18,7 @@
     justify-content: center;
 }
 
-/* Omit for now */
+ 
 .login_menu{
     height: 500px;
     width: 400px;
@@ -54,7 +54,7 @@
     margin-right: auto;
     text-align: center;
     margin-top: 20px;
-    /* text-transform: uppercase; */
+     
 }
 
 #king-name,#queens-name{
@@ -222,3 +222,12 @@
         margin-top: 10px;
     }
 }
+
+
+
+
+
+
+
+
+
